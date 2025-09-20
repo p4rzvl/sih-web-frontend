@@ -1,0 +1,2287 @@
+// app/college-admin/layout.tsx
+
+import React from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Menu,
+  Search,
+  ChevronRight,
+  Bell,
+  CircleUser,
+  Home,
+  Users,
+  UserCog,
+  BookOpen,
+  Building,
+  BedDouble,
+  Wallet,
+  Settings,
+  GraduationCap,
+  CalendarDays,
+} from "lucide-react";
+
+// --- NAVIGATION LINKS FOR COLLEGE ADMIN ---
+const navLinks = [
+  { href: "/college-admin", label: "Dashboard", icon: Home, active: true }, // Dashboard is now always active
+  {
+    href: "/college-admin/admissions",
+    label: "Admissions",
+    icon: GraduationCap,
+  },
+  { href: "/college-admin/students", label: "Students", icon: Users },
+  { href: "/college-admin/faculty", label: "Faculty", icon: UserCog },
+  { href: "/college-admin/departments", label: "Departments", icon: Building },
+  { href: "/college-admin/academics", label: "Academics", icon: BookOpen },
+  { href: "/college-admin/timetable", label: "Timetable", icon: CalendarDays },
+  { href: "/college-admin/hostel", label: "Hostel", icon: BedDouble },
+  { href: "/college-admin/finance", label: "Finance", icon: Wallet },
+  { href: "/college-admin/settings", label: "Settings", icon: Settings },
+];
+
+export default function CollegeAdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  // Theme matching your super-admin style
+  const themeConfig = {
+    bg: "bg-slate-50",
+    card: "bg-white",
+    text: "text-slate-900",
+    textMuted: "text-slate-600",
+    border: "border-slate-200",
+    primary: {
+      bg: "bg-[#001675]", // Your primary brand color
+      text: "text-[#001675]",
+    },
+  };
+
+  const SidebarNav = () => (
+    <nav className="space-y-1 px-4">
+      {navLinks.map((link) => (
+        <Link
+          key={link.label}
+          href={link.href}
+          className={`group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 ${
+            link.active // Use the 'active' property from the navLinks array
+              ? `${themeConfig.primary.bg} text-white shadow-md shadow-blue-900/20`
+              : `${themeConfig.textMuted} hover:bg-slate-100 hover:text-slate-900`
+          }`}
+        >
+          <link.icon
+            className={`h-5 w-5 ${
+              link.active ? "text-white" : "text-slate-500"
+            }`}
+          />
+          <span className="flex-1">{link.label}</span>
+          {!link.active && (
+            <ChevronRight className="h-4 w-4 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+          )}
+        </Link>
+      ))}
+    </nav>
+  );
+
+  return (
+    <div className={`min-h-screen ${themeConfig.bg}`}>
+      <div className="grid min-h-screen w-full md:grid-cols-[280px_1fr]">
+        {/* --- SIDEBAR --- */}
+        <div
+          className={`hidden border-r ${themeConfig.border} ${themeConfig.card} md:block sticky top-0 h-screen overflow-y-auto`}
+        >
+          <div className="flex h-full flex-col">
+            <div
+              className={`flex h-16 items-center border-b ${themeConfig.border} px-6 sticky top-0 ${themeConfig.card} z-10`}
+            >
+              <Link href="/college-admin" className="flex items-center gap-3">
+                <Image
+                  src="/logo.png"
+                  alt="VidyaLink Logo"
+                  width={50}
+                  height={50}
+                  className="rounded-md"
+                />
+                <div>
+                  <h1 className="font-bold text-xl">
+                    <span className="text-[#001675]">Vidya</span>
+                    <span className="text-[#444346]">Link</span>
+                  </h1>
+                  <p className={`text-xs font-medium text-blue-900/70`}>
+                    LDRP-ITR Portal
+                  </p>
+                </div>
+              </Link>
+            </div>
+            <div className="flex-1 overflow-auto py-4">
+              <SidebarNav />
+            </div>
+            <div className={`border-t ${themeConfig.border} p-4 mt-auto`}>
+              <Card className={`${themeConfig.bg} ${themeConfig.border}`}>
+                <CardContent className="p-3 flex items-center justify-between">
+                  <div>
+                    <h3 className={`font-semibold text-sm ${themeConfig.text}`}>
+                      LDRP-ITR
+                    </h3>
+                    <p className={`text-xs ${themeConfig.textMuted}`}>
+                      Gandhinagar
+                    </p>
+                  </div>
+                  <Image
+                    src="/ldrp.png"
+                    alt="LDRP-ITR Logo"
+                    width={48}
+                    height={48}
+                    className="rounded-md object-contain"
+                  />
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+
+        {/* --- MAIN CONTENT --- */}
+        <div className="flex flex-col">
+          <header
+            className={`flex h-16 items-center gap-4 border-b ${themeConfig.border} ${themeConfig.card} px-6 justify-between sticky top-0 z-10`}
+          >
+            {/* Left */}
+            <div className="flex items-center">
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="shrink-0 md:hidden mr-4"
+                  >
+                    <Menu className="h-5 w-5" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-72 p-0">
+                  {/* Mobile Nav Content */}
+                </SheetContent>
+              </Sheet>
+              <div className="hidden md:block relative">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+                <Input placeholder="Search..." className="pl-10 w-64" />
+              </div>
+            </div>
+            {/* Right */}
+            <div className="flex items-center gap-3">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button size="icon" variant="ghost" className="relative">
+                    <Bell className="h-5 w-5" />
+                    <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-red-500 border-2 border-white"></span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-80">
+                  {/* Notifications Content */}
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="gap-2">
+                    <div className="flex items-center gap-2">
+                      <div className="hidden md:block text-right">
+                        <p className="text-sm font-medium">Ankit Patel</p>
+                        <p className="text-xs text-slate-500">College Admin</p>
+                      </div>
+                      <div
+                        className={`h-8 w-8 rounded-full ${themeConfig.primary.bg} flex items-center justify-center`}
+                      >
+                        <CircleUser className="h-5 w-5 text-white" />
+                      </div>
+                    </div>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  {/* User Menu Content */}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </header>
+          <main className="flex-1 overflow-auto">{children}</main>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// // app/college-admin/layout.tsx
+
+// import React from "react";
+// import Link from "next/link";
+// import Image from "next/image";
+// import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+// import { Button } from "@/components/ui/button";
+// import { Input } from "@/components/ui/input";
+// import {
+//   DropdownMenu,
+//   DropdownMenuContent,
+//   DropdownMenuItem,
+//   DropdownMenuLabel,
+//   DropdownMenuSeparator,
+//   DropdownMenuTrigger,
+// } from "@/components/ui/dropdown-menu";
+// import { Card, CardContent } from "@/components/ui/card";
+// import {
+//   Menu,
+//   Search,
+//   ChevronRight,
+//   Bell,
+//   CircleUser,
+//   Home,
+//   Users,
+//   UserCog,
+//   BookOpen,
+//   Building,
+//   BedDouble,
+//   Wallet,
+//   Settings,
+//   GraduationCap,
+//   CalendarDays,
+// } from "lucide-react";
+
+// // --- NAVIGATION LINKS FOR COLLEGE ADMIN ---
+// const navLinks = [
+//   { href: "/college-admin", label: "Dashboard", icon: Home },
+//   {
+//     href: "/college-admin/admissions",
+//     label: "Admissions",
+//     icon: GraduationCap,
+//   },
+//   { href: "/college-admin/students", label: "Students", icon: Users },
+//   { href: "/college-admin/faculty", label: "Faculty", icon: UserCog },
+//   { href: "/college-admin/departments", label: "Departments", icon: Building },
+//   { href: "/college-admin/academics", label: "Academics", icon: BookOpen },
+//   { href: "/college-admin/timetable", label: "Timetable", icon: CalendarDays },
+//   { href: "/college-admin/hostel", label: "Hostel", icon: BedDouble },
+//   { href: "/college-admin/finance", label: "Finance", icon: Wallet },
+//   { href: "/college-admin/settings", label: "Settings", icon: Settings },
+// ];
+
+// export default function CollegeAdminLayout({
+//   children,
+// }: {
+//   children: React.ReactNode;
+// }) {
+//   // Theme matching your super-admin style, just adapted
+//   const themeConfig = {
+//     bg: "bg-slate-50",
+//     card: "bg-white",
+//     text: "text-slate-900",
+//     textMuted: "text-slate-600",
+//     border: "border-slate-200",
+//     primary: {
+//       bg: "bg-[#001675]", // Your primary brand color
+//       text: "text-[#001675]",
+//     },
+//   };
+
+//   const SidebarNav = () => (
+//     <nav className="space-y-1 px-4">
+//       {navLinks.map((link) => {
+//         const isActive = true;
+//         // const isActive = pathname === link.href;
+//         return (
+//           <Link
+//             key={link.label}
+//             href={link.href}
+//             className={`group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 ${
+//               isActive
+//                 ? `${themeConfig.primary.bg} text-white shadow-md shadow-blue-900/20`
+//                 : `${themeConfig.textMuted} hover:bg-slate-100 hover:text-slate-900`
+//             }`}
+//           >
+//             <link.icon
+//               className={`h-5 w-5 ${
+//                 isActive ? "text-white" : "text-slate-500"
+//               }`}
+//             />
+//             <span className="flex-1">{link.label}</span>
+//             {!isActive && (
+//               <ChevronRight className="h-4 w-4 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+//             )}
+//           </Link>
+//         );
+//       })}
+//     </nav>
+//   );
+
+//   return (
+//     <div className={`min-h-screen ${themeConfig.bg}`}>
+//       <div className="grid min-h-screen w-full md:grid-cols-[280px_1fr]">
+//         {/* --- SIDEBAR --- */}
+//         <div
+//           className={`hidden border-r ${themeConfig.border} ${themeConfig.card} md:block sticky top-0 h-screen overflow-y-auto`}
+//         >
+//           <div className="flex h-full flex-col">
+//             <div
+//               className={`flex h-16 items-center border-b ${themeConfig.border} px-6 sticky top-0 ${themeConfig.card} z-10`}
+//             >
+//               <Link href="/college-admin" className="flex items-center gap-3">
+//                 <Image
+//                   src="/logo.png"
+//                   alt="VidyaLink Logo"
+//                   width={50}
+//                   height={50}
+//                   className="rounded-md"
+//                 />
+//                 <div>
+//                   <h1 className="font-bold text-xl">
+//                     <span className="text-[#001675]">Vidya</span>
+//                     <span className="text-[#444346]">Link</span>
+//                   </h1>
+//                   <p className={`text-xs font-medium text-blue-900/70`}>
+//                     LDRP-ITR Portal
+//                   </p>
+//                 </div>
+//               </Link>
+//             </div>
+//             <div className="flex-1 overflow-auto py-4">
+//               <SidebarNav />
+//             </div>
+//             <div className={`border-t ${themeConfig.border} p-4 mt-auto`}>
+//               <Card className={`${themeConfig.bg} ${themeConfig.border}`}>
+//                 <CardContent className="p-3 flex items-center justify-between">
+//                   <div>
+//                     <h3 className={`font-semibold text-sm ${themeConfig.text}`}>
+//                       LDRP-ITR
+//                     </h3>
+//                     <p className={`text-xs ${themeConfig.textMuted}`}>
+//                       Gandhinagar
+//                     </p>
+//                   </div>
+//                   <Image
+//                     src="/ldrp.png"
+//                     alt="LDRP-ITR Logo"
+//                     width={48}
+//                     height={48}
+//                     className="rounded-md object-contain"
+//                   />
+//                 </CardContent>
+//               </Card>
+//             </div>
+//           </div>
+//         </div>
+
+//         {/* --- MAIN CONTENT --- */}
+//         <div className="flex flex-col">
+//           <header
+//             className={`flex h-16 items-center gap-4 border-b ${themeConfig.border} ${themeConfig.card} px-6 justify-between sticky top-0 z-10`}
+//           >
+//             {/* Left */}
+//             <div className="flex items-center">
+//               <Sheet>
+//                 <SheetTrigger asChild>
+//                   <Button
+//                     variant="outline"
+//                     size="icon"
+//                     className="shrink-0 md:hidden mr-4"
+//                   >
+//                     <Menu className="h-5 w-5" />
+//                   </Button>
+//                 </SheetTrigger>
+//                 <SheetContent side="left" className="w-72 p-0">
+//                   {/* Mobile Nav Content */}
+//                 </SheetContent>
+//               </Sheet>
+//               <div className="hidden md:block relative">
+//                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+//                 <Input placeholder="Search..." className="pl-10 w-64" />
+//               </div>
+//             </div>
+//             {/* Right */}
+//             <div className="flex items-center gap-3">
+//               <DropdownMenu>
+//                 <DropdownMenuTrigger asChild>
+//                   <Button size="icon" variant="ghost" className="relative">
+//                     <Bell className="h-5 w-5" />
+//                     <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-red-500 border-2 border-white"></span>
+//                   </Button>
+//                 </DropdownMenuTrigger>
+//                 <DropdownMenuContent align="end" className="w-80">
+//                   {/* Notifications Content */}
+//                 </DropdownMenuContent>
+//               </DropdownMenu>
+//               <DropdownMenu>
+//                 <DropdownMenuTrigger asChild>
+//                   <Button variant="ghost" className="gap-2">
+//                     <div className="flex items-center gap-2">
+//                       <div className="hidden md:block text-right">
+//                         <p className="text-sm font-medium">Ankit Patel</p>
+//                         <p className="text-xs text-slate-500">College Admin</p>
+//                       </div>
+//                       <div
+//                         className={`h-8 w-8 rounded-full ${themeConfig.primary.bg} flex items-center justify-center`}
+//                       >
+//                         <CircleUser className="h-5 w-5 text-white" />
+//                       </div>
+//                     </div>
+//                   </Button>
+//                 </DropdownMenuTrigger>
+//                 <DropdownMenuContent align="end" className="w-56">
+//                   {/* User Menu Content */}
+//                 </DropdownMenuContent>
+//               </DropdownMenu>
+//             </div>
+//           </header>
+//           <main className="flex-1 overflow-auto">{children}</main>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+// // "use client";
+
+// // import React from "react";
+// // import Link from "next/link";
+// // import Image from "next/image";
+// // import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+// // import { Button } from "@/components/ui/button";
+// // import { Input } from "@/components/ui/input";
+// // import {
+// //   DropdownMenu,
+// //   DropdownMenuContent,
+// //   DropdownMenuItem,
+// //   DropdownMenuLabel,
+// //   DropdownMenuSeparator,
+// //   DropdownMenuTrigger,
+// // } from "@/components/ui/dropdown-menu";
+// // import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+// // import {
+// //   Menu,
+// //   Search,
+// //   ChevronRight,
+// //   Bell,
+// //   CircleUser,
+// //   Home,
+// //   Users,
+// //   UserCheck,
+// //   BookOpen,
+// //   Landmark,
+// //   BedDouble,
+// //   Wallet,
+// //   Settings,
+// // } from "lucide-react";
+// // import { usePathname } from "next/navigation";
+
+// // // --- MOCK DATA FOR NOTIFICATIONS ---
+// // const recentActivities = [
+// //   {
+// //     time: "2 hours ago",
+// //     text: "New batch of 450 students registered for Summer 2024.",
+// //   },
+// //   {
+// //     time: "5 hours ago",
+// //     text: "Monthly financial report generated and sent to stakeholders.",
+// //   },
+// //   {
+// //     time: "1 day ago",
+// //     text: "CM Patel College hostel renovation project completed.",
+// //   },
+// // ];
+
+// // // --- NAVIGATION LINKS CONFIGURATION ---
+// // const navLinks = [
+// //   { href: "/admin", label: "Dashboard", icon: Home },
+// //   { href: "/admin/colleges", label: "College Management", icon: Landmark },
+// //   { href: "/admin/faculty", label: "Faculty & Staff", icon: UserCheck },
+// //   { href: "/admin/students", label: "Student Management", icon: Users },
+// //   { href: "/admin/academics", label: "Academic Programs", icon: BookOpen },
+// //   { href: "/admin/hostels", label: "Hostel Management", icon: BedDouble },
+// //   { href: "/admin/finance", label: "Financial Reports", icon: Wallet },
+// //   { href: "/admin/settings", label: "Settings", icon: Settings },
+// // ];
+
+// // export default function DashboardLayout({
+// //   children,
+// // }: {
+// //   children: React.ReactNode;
+// // }) {
+// //   const pathname = usePathname();
+
+// //   // A simple static theme config for the layout. This could be dynamic with state.
+// //   const themeConfig = {
+// //     bg: "bg-slate-50",
+// //     card: "bg-white",
+// //     text: "text-slate-900",
+// //     textMuted: "text-slate-600",
+// //     border: "border-slate-200",
+// //     primary: {
+// //       bg: "bg-blue-600",
+// //       hover: "hover:bg-blue-700",
+// //       text: "text-blue-700",
+// //     },
+// //   };
+
+// //   const SidebarNav = () => (
+// //     <nav className="space-y-1 px-4">
+// //       {navLinks.map((link) => {
+// //         const isActive = pathname === link.href;
+// //         return (
+// //           <Link
+// //             key={link.label}
+// //             href={link.href}
+// //             className={`group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 ${
+// //               isActive
+// //                 ? `${themeConfig.primary.bg} text-white shadow-lg shadow-blue-500/30`
+// //                 : `${themeConfig.textMuted} hover:bg-slate-100 hover:text-slate-900`
+// //             }`}
+// //           >
+// //             <link.icon
+// //               className={`h-5 w-5 ${
+// //                 isActive ? "text-white" : "text-slate-500"
+// //               }`}
+// //             />
+// //             <span className="flex-1">{link.label}</span>
+// //             {!isActive && (
+// //               <ChevronRight className="h-4 w-4 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+// //             )}
+// //           </Link>
+// //         );
+// //       })}
+// //     </nav>
+// //   );
+
+// //   return (
+// //     <div className={`min-h-screen w-full ${themeConfig.bg}`}>
+// //       <div className="grid min-h-screen w-full md:grid-cols-[280px_1fr]">
+// //         {/* --- DESKTOP SIDEBAR --- */}
+// //         <div
+// //           className={`hidden border-r ${themeConfig.border} ${themeConfig.card} md:block sticky top-0 h-screen`}
+// //         >
+// //           <div className="flex h-full max-h-screen flex-col">
+// //             <div
+// //               className={`flex h-16 items-center border-b ${themeConfig.border} px-6 sticky top-0 ${themeConfig.card} z-10`}
+// //             >
+// //               <Link href="/" className="flex items-center gap-3">
+// //                 <Image
+// //                   src="/logo.png" // Assumes logo.png is in the /public folder
+// //                   alt="VidyaLink Logo"
+// //                   width={40}
+// //                   height={40}
+// //                   className="rounded-lg"
+// //                 />
+// //                 <div>
+// //                   <h1
+// //                     className={`font-bold text-xl ${themeConfig.primary.text}`}
+// //                   >
+// //                     VidyaLink
+// //                   </h1>
+// //                   <p className={`text-xs font-medium ${themeConfig.textMuted}`}>
+// //                     University ERP
+// //                   </p>
+// //                 </div>
+// //               </Link>
+// //             </div>
+// //             <div className="flex-1 overflow-auto py-4">
+// //               <SidebarNav />
+// //             </div>
+// //             <div className={`border-t ${themeConfig.border} p-4 mt-auto`}>
+// //               <Card className={`${themeConfig.bg} ${themeConfig.border}`}>
+// //                 <CardContent className="p-3 flex items-center justify-between">
+// //                   <div>
+// //                     <h3 className={`font-semibold text-sm ${themeConfig.text}`}>
+// //                       KSV University
+// //                     </h3>
+// //                     <p className={`text-xs ${themeConfig.textMuted}`}>
+// //                       Gandhinagar, Gujarat
+// //                     </p>
+// //                   </div>
+// //                   <Image
+// //                     src="/ksvo.png" // Assumes ksvo.png is in /public
+// //                     alt="KSV University Logo"
+// //                     width={48}
+// //                     height={48}
+// //                     className="rounded-md object-contain"
+// //                   />
+// //                 </CardContent>
+// //               </Card>
+// //             </div>
+// //           </div>
+// //         </div>
+
+// //         {/* --- MAIN CONTENT AREA --- */}
+// //         <div className="flex flex-col">
+// //           <header
+// //             className={`flex h-16 items-center gap-4 border-b ${themeConfig.border} ${themeConfig.card} px-4 sm:px-6 sticky top-0 z-30`}
+// //           >
+// //             {/* Mobile Menu */}
+// //             <Sheet>
+// //               <SheetTrigger asChild>
+// //                 <Button
+// //                   variant="outline"
+// //                   size="icon"
+// //                   className="shrink-0 md:hidden"
+// //                 >
+// //                   <Menu className="h-5 w-5" />
+// //                   <span className="sr-only">Toggle navigation menu</span>
+// //                 </Button>
+// //               </SheetTrigger>
+// //               <SheetContent side="left" className="flex flex-col p-0 w-72">
+// //                 <div className="flex h-16 items-center border-b px-6">
+// //                   <Link href="/" className="flex items-center gap-3">
+// //                     <Image
+// //                       src="/logo.png"
+// //                       alt="VidyaLink Logo"
+// //                       width={32}
+// //                       height={32}
+// //                     />
+// //                     <h1 className="font-bold text-lg">VidyaLink</h1>
+// //                   </Link>
+// //                 </div>
+// //                 <div className="flex-1 overflow-auto py-4">
+// //                   <SidebarNav />
+// //                 </div>
+// //               </SheetContent>
+// //             </Sheet>
+
+// //             {/* Header Content */}
+// //             <div className="w-full flex-1">
+// //               <div className="relative">
+// //                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+// //                 <Input
+// //                   type="search"
+// //                   placeholder="Search colleges, students, faculty..."
+// //                   className="w-full pl-10 md:w-[200px] lg:w-[300px]"
+// //                 />
+// //               </div>
+// //             </div>
+
+// //             <DropdownMenu>
+// //               <DropdownMenuTrigger asChild>
+// //                 <Button
+// //                   variant="ghost"
+// //                   size="icon"
+// //                   className="relative rounded-full"
+// //                 >
+// //                   <Bell className="h-5 w-5" />
+// //                   <span className="absolute top-1 right-1 h-2.5 w-2.5 rounded-full bg-red-500 border-2 border-white"></span>
+// //                 </Button>
+// //               </DropdownMenuTrigger>
+// //               <DropdownMenuContent align="end" className="w-80">
+// //                 <DropdownMenuLabel>Recent Activities</DropdownMenuLabel>
+// //                 <DropdownMenuSeparator />
+// //                 {recentActivities.map((item, idx) => (
+// //                   <DropdownMenuItem key={idx}>
+// //                     <div>
+// //                       <p className="text-xs text-wrap">{item.text}</p>
+// //                       <p className="text-xs text-slate-500 mt-1">{item.time}</p>
+// //                     </div>
+// //                   </DropdownMenuItem>
+// //                 ))}
+// //               </DropdownMenuContent>
+// //             </DropdownMenu>
+
+// //             <DropdownMenu>
+// //               <DropdownMenuTrigger asChild>
+// //                 <Button
+// //                   variant="ghost"
+// //                   className="relative h-9 w-9 rounded-full"
+// //                 >
+// //                   <div
+// //                     className={`h-9 w-9 rounded-full ${themeConfig.primary.bg} flex items-center justify-center`}
+// //                   >
+// //                     <CircleUser className="h-5 w-5 text-white" />
+// //                   </div>
+// //                 </Button>
+// //               </DropdownMenuTrigger>
+// //               <DropdownMenuContent align="end" className="w-56">
+// //                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
+// //                 <DropdownMenuSeparator />
+// //                 <DropdownMenuItem>Profile</DropdownMenuItem>
+// //                 <DropdownMenuItem>Settings</DropdownMenuItem>
+// //                 <DropdownMenuSeparator />
+// //                 <DropdownMenuItem>Logout</DropdownMenuItem>
+// //               </DropdownMenuContent>
+// //             </DropdownMenu>
+// //           </header>
+
+// //           <main className="flex-1 overflow-y-auto bg-slate-50">{children}</main>
+// //         </div>
+// //       </div>
+// //     </div>
+// //   );
+// // }
+
+
+
+// app/college-admin/page.tsx
+
+"use client";
+
+import React from "react";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+  Pie,
+  PieChart,
+  Cell,
+  Legend,
+} from "recharts";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Users,
+  UserCheck,
+  CalendarCheck2,
+  FileCheck2,
+  TrendingUp,
+  IndianRupee,
+  BedDouble,
+  Library,
+  ArrowRight,
+  Mail,
+  AlertTriangle,
+  TrendingDown,
+} from "lucide-react";
+
+// --- THEME FOR THIS PAGE ---
+const theme = {
+  primary: {
+    bg: "bg-emerald-600",
+    text: "text-emerald-700",
+    lightBg: "bg-emerald-50",
+    border: "border-emerald-200",
+    fill: "#10b981",
+    stroke: "#059669",
+  },
+  secondary: {
+    fill: "#3b82f6", // Blue
+  },
+  danger: {
+    fill: "#ef4444", // Red
+  },
+};
+
+// --- REUSABLE COMPONENTS (for this page) ---
+const StatCard = ({
+  title,
+  value,
+  icon,
+  change,
+}: {
+  title: string;
+  value: string;
+  icon: React.ReactNode;
+  change: string;
+}) => (
+  <Card>
+    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+      <CardTitle className="text-sm font-medium text-slate-500">
+        {title}
+      </CardTitle>
+      {icon}
+    </CardHeader>
+    <CardContent>
+      <div className="text-2xl font-bold">{value}</div>
+      <p className="text-xs text-slate-500">{change}</p>
+    </CardContent>
+  </Card>
+);
+
+// --- MAIN DASHBOARD PAGE ---
+export default function CollegeAdminDashboardPage() {
+  // Mock Data
+  const revenueExpenseData = [
+    { month: "Jan", revenue: 4.5, expense: 3.8 },
+    { month: "Feb", revenue: 4.2, expense: 3.9 },
+    { month: "Mar", revenue: 5.1, expense: 4.1 },
+    { month: "Apr", revenue: 4.8, expense: 4.0 },
+    { month: "May", revenue: 5.5, expense: 4.2 },
+  ];
+
+  const feeCollectionByDept = [
+    { dept: "Computer Eng.", progress: 98, pending: "₹1.2L" },
+    { dept: "Mechanical Eng.", progress: 93, pending: "₹3.5L" },
+    { dept: "Civil Eng.", progress: 97, pending: "₹1.8L" },
+    { dept: "E.C. Eng.", progress: 91, pending: "₹4.1L" },
+  ];
+
+  const operationalStatus = [
+    { item: "Hostel Occupancy", value: 98, total: 1300, unit: "Beds" },
+    { item: "Library Books Issued", value: 65, total: 28000, unit: "Books" },
+    { item: "Transport Utilization", value: 85, total: 40, unit: "Buses" },
+  ];
+
+  return (
+    <div className="p-4 sm:p-6 space-y-8 bg-slate-50">
+      {/* Header Section */}
+      <div>
+        <h1 className="text-3xl font-bold text-slate-800">Admin Dashboard</h1>
+        <p className="text-slate-500">
+          Welcome back, Ankit! Here's what's happening at LDRP-ITR today.
+        </p>
+      </div>
+
+      {/* Section 1: Top-Level KPIs */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard
+          title="Total Students"
+          value="4,520"
+          icon={<Users className="h-4 w-4 text-slate-500" />}
+          change="+2.1% from last month"
+        />
+        <StatCard
+          title="Faculty on Duty"
+          value="205"
+          icon={<UserCheck className="h-4 w-4 text-slate-500" />}
+          change="10 on leave"
+        />
+        <StatCard
+          title="Pending Verifications"
+          value="15"
+          icon={<FileCheck2 className="h-4 w-4 text-slate-500" />}
+          change="Admission tasks"
+        />
+        <StatCard
+          title="Semester Revenue"
+          value="₹15.2 Cr"
+          icon={<IndianRupee className="h-4 w-4 text-slate-500" />}
+          change="96% fees collected"
+        />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* --- Main Column (Left) --- */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Section 2: Revenue & Expenses */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Revenue vs. Expenses (YTD)</CardTitle>
+              <CardDescription>
+                Monthly financial performance of the college (in ₹ Cr).
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={revenueExpenseData}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis
+                    dataKey="month"
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <YAxis
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                    unit=" Cr"
+                  />
+                  <Tooltip
+                    cursor={{ fill: theme.primary.lightBg }}
+                    contentStyle={{
+                      borderRadius: "8px",
+                      border: `1px solid ${theme.primary.border}`,
+                    }}
+                  />
+                  <Legend />
+                  <Bar
+                    dataKey="revenue"
+                    name="Revenue"
+                    radius={[4, 4, 0, 0]}
+                    fill={theme.primary.fill}
+                  />
+                  <Bar
+                    dataKey="expense"
+                    name="Expense"
+                    radius={[4, 4, 0, 0]}
+                    fill={theme.danger.fill}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          {/* Section 3: Fee Collection */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Department Fee Collection Status</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Department</TableHead>
+                    <TableHead className="w-[200px]">Progress</TableHead>
+                    <TableHead className="text-right">
+                      Outstanding Amount
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {feeCollectionByDept.map((item) => (
+                    <TableRow key={item.dept}>
+                      <TableCell className="font-medium">{item.dept}</TableCell>
+                      <TableCell>
+                        <Progress
+                          value={item.progress}
+                          className="h-2"
+                          // indicatorClassName={theme.primary.bg}
+                        />
+                      </TableCell>
+                      <TableCell className="text-right font-semibold">
+                        {item.pending}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* --- Side Column (Right) --- */}
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Operational Status</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {operationalStatus.map((op) => (
+                <div key={op.item}>
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-sm font-medium">{op.item}</span>
+                    <span className="text-sm font-bold">{op.value}%</span>
+                  </div>
+                  <Progress
+                    value={op.value}
+                    // indicatorClassName={theme.primary.bg}
+                  />
+                  <p className="text-xs text-slate-500 mt-1">
+                    {((op.value / 100) * op.total).toLocaleString(undefined, {
+                      maximumFractionDigits: 0,
+                    })}{" "}
+                    / {op.total.toLocaleString()} {op.unit}
+                  </p>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
+          <Card className={`${theme.primary.lightBg} border-emerald-200`}>
+            <CardHeader>
+              <CardTitle
+                className={`flex items-center gap-2 ${theme.primary.text}`}
+              >
+                <AlertTriangle className="h-5 w-5" /> Admin Tasks
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <Button
+                variant="outline"
+                className="w-full justify-between bg-white"
+              >
+                Verify Student Documents <ArrowRight className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full justify-between bg-white"
+              >
+                Approve Faculty Leaves <ArrowRight className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full justify-between bg-white"
+              >
+                Send Fee Reminders <Mail className="h-4 w-4" />
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// // app/college-admin/page.tsx
+
+// "use client";
+
+// import React from "react";
+// import {
+//   Bar,
+//   BarChart,
+//   CartesianGrid,
+//   ResponsiveContainer,
+//   Tooltip,
+//   XAxis,
+//   YAxis,
+//   Pie,
+//   PieChart,
+//   Cell,
+// } from "recharts";
+// import {
+//   Card,
+//   CardContent,
+//   CardDescription,
+//   CardHeader,
+//   CardTitle,
+// } from "@/components/ui/card";
+// import {
+//   Table,
+//   TableBody,
+//   TableCell,
+//   TableHead,
+//   TableHeader,
+//   TableRow,
+// } from "@/components/ui/table";
+// import { Progress } from "@/components/ui/progress";
+// import { Badge } from "@/components/ui/badge";
+// import { Button } from "@/components/ui/button";
+// import {
+//   Users,
+//   UserCheck,
+//   CalendarCheck2,
+//   FileCheck2,
+//   TrendingUp,
+//   IndianRupee,
+//   BedDouble,
+//   Library,
+//   ArrowRight,
+//   Mail,
+//   AlertTriangle,
+// } from "lucide-react";
+
+// // --- THEME FOR THIS PAGE ---
+// const theme = {
+//   primary: {
+//     bg: "bg-emerald-600",
+//     text: "text-emerald-700",
+//     lightBg: "bg-emerald-50",
+//     border: "border-emerald-200",
+//     fill: "#10b981",
+//     stroke: "#059669",
+//   },
+//   accent: {
+//     fill: "#f59e0b", // Amber
+//     bg: "bg-amber-500",
+//     text: "text-amber-600",
+//     lightBg: "bg-amber-50",
+//   },
+// };
+
+// // --- REUSABLE COMPONENTS (for this page) ---
+// const StatCard = ({
+//   title,
+//   value,
+//   icon,
+//   change,
+// }: {
+//   title: string;
+//   value: string;
+//   icon: React.ReactNode;
+//   change: string;
+// }) => (
+//   <Card>
+//     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+//       <CardTitle className="text-sm font-medium text-slate-500">
+//         {title}
+//       </CardTitle>
+//       {icon}
+//     </CardHeader>
+//     <CardContent>
+//       <div className="text-2xl font-bold">{value}</div>
+//       <p className="text-xs text-slate-500">{change}</p>
+//     </CardContent>
+//   </Card>
+// );
+
+// const SectionTitle = ({ children }: { children: React.ReactNode }) => (
+//   <h2 className="text-xl font-semibold text-slate-800 tracking-tight">
+//     {children}
+//   </h2>
+// );
+
+// // --- MAIN DASHBOARD PAGE ---
+// export default function CollegeAdminDashboardPage() {
+//   // Mock Data
+//   const admissionsPipelineData = [
+//     { name: "Inquiries", value: 1850 },
+//     { name: "Applied", value: 1620 },
+//     { name: "Verified", value: 1250 },
+//     { name: "Admitted", value: 1180 },
+//   ];
+
+//   const feeCollectionByDept = [
+//     { dept: "Computer Eng.", progress: 98, pending: "₹1.2L" },
+//     { dept: "Mechanical Eng.", progress: 93, pending: "₹3.5L" },
+//     { dept: "Civil Eng.", progress: 97, pending: "₹1.8L" },
+//     { dept: "E.C. Eng.", progress: 91, pending: "₹4.1L" },
+//   ];
+
+//   return (
+//     <div className="p-4 sm:p-6 space-y-8 bg-slate-50">
+//       {/* Header Section */}
+//       <div>
+//         <h1 className="text-3xl font-bold text-slate-800">Admin Dashboard</h1>
+//         <p className="text-slate-500">
+//           Welcome back, Ankit! Here's what's happening at LDRP-ITR today.
+//         </p>
+//       </div>
+
+//       {/* Section 1: Today's Snapshot */}
+//       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+//         <StatCard
+//           title="Total Students"
+//           value="4,520"
+//           icon={<Users className="h-4 w-4 text-slate-500" />}
+//           change="+2.1% from last month"
+//         />
+//         <StatCard
+//           title="Faculty Present"
+//           value="205 / 215"
+//           icon={<UserCheck className="h-4 w-4 text-slate-500" />}
+//           change="10 on leave"
+//         />
+//         <StatCard
+//           title="Classes Today"
+//           value="124"
+//           icon={<CalendarCheck2 className="h-4 w-4 text-slate-500" />}
+//           change="98% scheduled"
+//         />
+//         <StatCard
+//           title="Pending Verifications"
+//           value="15"
+//           icon={<FileCheck2 className="h-4 w-4 text-slate-500" />}
+//           change="Admissions task"
+//         />
+//       </div>
+
+//       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+//         {/* --- Main Column (Left) --- */}
+//         <div className="lg:col-span-2 space-y-6">
+//           {/* Section 2: Admissions Pipeline */}
+//           <Card>
+//             <CardHeader>
+//               <CardTitle>Admissions Pipeline (2024-25)</CardTitle>
+//               <CardDescription>
+//                 Live funnel of new student applications.
+//               </CardDescription>
+//             </CardHeader>
+//             <CardContent>
+//               <ResponsiveContainer width="100%" height={300}>
+//                 <BarChart
+//                   data={admissionsPipelineData}
+//                   margin={{ top: 5, right: 20, left: -10, bottom: 5 }}
+//                 >
+//                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
+//                   <XAxis
+//                     dataKey="name"
+//                     fontSize={12}
+//                     tickLine={false}
+//                     axisLine={false}
+//                   />
+//                   <YAxis fontSize={12} tickLine={false} axisLine={false} />
+//                   <Tooltip
+//                     cursor={{ fill: theme.primary.lightBg }}
+//                     contentStyle={{
+//                       borderRadius: "8px",
+//                       border: `1px solid ${theme.primary.border}`,
+//                     }}
+//                   />
+//                   <Bar
+//                     dataKey="value"
+//                     radius={[4, 4, 0, 0]}
+//                     fill={theme.primary.fill}
+//                   />
+//                 </BarChart>
+//               </ResponsiveContainer>
+//             </CardContent>
+//           </Card>
+
+//           {/* Section 3: Financial Overview */}
+//           <Card>
+//             <CardHeader>
+//               <CardTitle>Financial Overview</CardTitle>
+//               <CardDescription>
+//                 Semester fee collection status by department.
+//               </CardDescription>
+//             </CardHeader>
+//             <CardContent>
+//               <Table>
+//                 <TableHeader>
+//                   <TableRow>
+//                     <TableHead>Department</TableHead>
+//                     <TableHead className="w-[200px]">Progress</TableHead>
+//                     <TableHead className="text-right">
+//                       Outstanding Amount
+//                     </TableHead>
+//                   </TableRow>
+//                 </TableHeader>
+//                 <TableBody>
+//                   {feeCollectionByDept.map((item) => (
+//                     <TableRow key={item.dept}>
+//                       <TableCell className="font-medium">{item.dept}</TableCell>
+//                       <TableCell>
+//                         <Progress
+//                           value={item.progress}
+//                           className="h-2"
+//                           // indicatorClassName={theme.primary.bg}
+//                         />
+//                       </TableCell>
+//                       <TableCell className="text-right font-semibold">
+//                         {item.pending}
+//                       </TableCell>
+//                     </TableRow>
+//                   ))}
+//                 </TableBody>
+//               </Table>
+//             </CardContent>
+//           </Card>
+//         </div>
+
+//         {/* --- Side Column (Right) --- */}
+//         <div className="space-y-6">
+//           {/* Section 4: Quick Actions & Alerts */}
+//           <Card className={`${theme.accent.lightBg} border-amber-200`}>
+//             <CardHeader>
+//               <CardTitle
+//                 className={`flex items-center gap-2 ${theme.accent.text}`}
+//               >
+//                 <AlertTriangle className="h-5 w-5" /> Quick Actions
+//               </CardTitle>
+//             </CardHeader>
+//             <CardContent className="space-y-3">
+//               <Button variant="outline" className="w-full justify-between">
+//                 Verify 15 Student Documents <ArrowRight className="h-4 w-4" />
+//               </Button>
+//               <Button variant="outline" className="w-full justify-between">
+//                 Approve 3 Faculty Leaves <ArrowRight className="h-4 w-4" />
+//               </Button>
+//               <Button variant="outline" className="w-full justify-between">
+//                 Send Fee Reminders <Mail className="h-4 w-4" />
+//               </Button>
+//             </CardContent>
+//           </Card>
+
+//           {/* Section 5: Operations Hub */}
+//           <Card>
+//             <CardHeader>
+//               <CardTitle>Operations Hub</CardTitle>
+//             </CardHeader>
+//             <CardContent className="grid grid-cols-2 gap-4">
+//               <div className="text-center p-4 rounded-lg bg-slate-50">
+//                 <BedDouble className="h-6 w-6 mx-auto text-slate-500" />
+//                 <p className="text-xl font-bold mt-2">98%</p>
+//                 <p className="text-xs text-slate-500">Hostel Occupancy</p>
+//               </div>
+//               <div className="text-center p-4 rounded-lg bg-slate-50">
+//                 <Library className="h-6 w-6 mx-auto text-slate-500" />
+//                 <p className="text-xl font-bold mt-2">65%</p>
+//                 <p className="text-xs text-slate-500">Library Books Issued</p>
+//               </div>
+//             </CardContent>
+//           </Card>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+// // "use client";
+
+// // import React from "react";
+// // import {
+// //   Bar,
+// //   BarChart,
+// //   CartesianGrid,
+// //   Cell,
+// //   Pie,
+// //   PieChart,
+// //   ResponsiveContainer,
+// //   Tooltip,
+// //   XAxis,
+// //   YAxis,
+// // } from "recharts";
+// // import {
+// //   Card,
+// //   CardContent,
+// //   CardDescription,
+// //   CardHeader,
+// //   CardTitle,
+// // } from "@/components/ui/card";
+// // import {
+// //   Table,
+// //   TableBody,
+// //   TableCell,
+// //   TableHead,
+// //   TableHeader,
+// //   TableRow,
+// // } from "@/components/ui/table";
+// // import { Progress } from "@/components/ui/progress";
+// // import { Badge } from "@/components/ui/badge";
+// // import {
+// //   Users,
+// //   UserCog,
+// //   Building,
+// //   Wallet,
+// //   TrendingUp,
+// //   AlertTriangle,
+// //   CheckCircle2,
+// //   BedDouble,
+// //   Library,
+// //   GraduationCap,
+// // } from "lucide-react";
+
+// // // --- Animated Counter & Metric Card (Assuming these are available from previous code) ---
+// // const AnimatedCounter = ({
+// //   value,
+// //   prefix = "",
+// //   suffix = "",
+// // }: {
+// //   value: number;
+// //   prefix?: string;
+// //   suffix?: string;
+// // }) => {
+// //   // For brevity, assuming the AnimatedCounter implementation from previous examples is here
+// //   // It will animate numbers from 0 to the target value.
+// //   return (
+// //     <span>
+// //       {prefix}
+// //       {value.toLocaleString()}
+// //       {suffix}
+// //     </span>
+// //   );
+// // };
+
+// // const MetricCard = ({
+// //   title,
+// //   value,
+// //   change,
+// //   icon,
+// //   prefix = "",
+// //   suffix = "",
+// //   theme,
+// // }: any) => (
+// //   <Card
+// //     className={`relative overflow-hidden ${theme.border} ${theme.card} hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group`}
+// //   >
+// //     <CardContent className="p-4">
+// //       <div className="flex items-start justify-between">
+// //         <div className={`p-3 rounded-xl bg-blue-100 text-blue-700`}>{icon}</div>
+// //         <div className="text-xs font-semibold text-slate-500">{change}</div>
+// //       </div>
+// //       <div className="mt-2">
+// //         <h3 className="text-sm font-medium text-slate-600">{title}</h3>
+// //         <p className="text-2xl font-bold text-slate-800 tracking-tight">
+// //           <AnimatedCounter value={value} prefix={prefix} suffix={suffix} />
+// //         </p>
+// //       </div>
+// //     </CardContent>
+// //   </Card>
+// // );
+
+// // // --- MAIN COLLEGE ADMIN DASHBOARD PAGE ---
+// // export default function CollegeAdminPage() {
+// //   const themeConfig = { border: "border-slate-200", card: "bg-white" };
+
+// //   // --- MOCK DATA for LDRP-ITR Admin ---
+// //   const adminMetrics = [
+// //     {
+// //       title: "Total Students",
+// //       value: 4520,
+// //       change: "+45 New",
+// //       icon: <Users className="h-5 w-5" />,
+// //     },
+// //     {
+// //       title: "Total Faculty",
+// //       value: 215,
+// //       change: "+2 New",
+// //       icon: <UserCog className="h-5 w-5" />,
+// //     },
+// //     {
+// //       title: "Active Departments",
+// //       value: 7,
+// //       change: "Stable",
+// //       icon: <Building className="h-5 w-5" />,
+// //     },
+// //     {
+// //       title: "Revenue (Semester)",
+// //       value: 15.2,
+// //       prefix: "₹",
+// //       suffix: " Cr",
+// //       change: "96% Collected",
+// //       icon: <Wallet className="h-5 w-5" />,
+// //     },
+// //   ];
+
+// //   const admissionsData = [
+// //     { stage: "Applications", count: 1850, fill: "#3b82f6" },
+// //     { stage: "Verified", count: 1620, fill: "#60a5fa" },
+// //     { stage: "Admitted", count: 1250, fill: "#93c5fd" },
+// //     { stage: "Enrolled", count: 1180, fill: "#bfdbfe" },
+// //   ];
+
+// //   const feeCollectionData = [
+// //     { course: "B.E. Computer", total: 5.8, collected: 5.7, progress: 98 },
+// //     { course: "B.E. Mechanical", total: 4.2, collected: 3.9, progress: 93 },
+// //     { course: "B.E. Civil", total: 3.5, collected: 3.4, progress: 97 },
+// //     { course: "B.E. E.C.", total: 3.2, collected: 2.9, progress: 91 },
+// //   ];
+
+// //   const systemAlerts = [
+// //     {
+// //       text: "15 student documents pending verification.",
+// //       icon: <AlertTriangle className="h-4 w-4 text-amber-500" />,
+// //     },
+// //     {
+// //       text: "New faculty profile for Dr. Mehta needs activation.",
+// //       icon: <CheckCircle2 className="h-4 w-4 text-emerald-500" />,
+// //     },
+// //     {
+// //       text: "Timetable for Sem 3 has 2 unresolved conflicts.",
+// //       icon: <AlertTriangle className="h-4 w-4 text-amber-500" />,
+// //     },
+// //   ];
+
+// //   const recentlyOnboarded = [
+// //     { name: "Priya Sharma", type: "Student", course: "B.E. Comp" },
+// //     { name: "Dr. Ramesh Verma", type: "Faculty", dept: "Mechanical" },
+// //     { name: "Aarav Singh", type: "Student", course: "B.E. Civil" },
+// //   ];
+
+// //   return (
+// //     <div className="p-4 sm:p-6 space-y-6">
+// //       <div className="flex items-center justify-between">
+// //         <div>
+// //           <h1 className="text-2xl sm:text-3xl font-bold text-slate-800">
+// //             Admin Dashboard
+// //           </h1>
+// //           <p className="text-slate-600 mt-1">
+// //             Oversee and manage all operational aspects of LDRP-ITR.
+// //           </p>
+// //         </div>
+// //       </div>
+
+// //       {/* --- Top KPI Cards --- */}
+// //       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+// //         {adminMetrics.map((metric) => (
+// //           <MetricCard key={metric.title} {...metric} theme={themeConfig} />
+// //         ))}
+// //       </div>
+
+// //       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+// //         {/* --- Left & Main Section --- */}
+// //         <div className="lg:col-span-2 space-y-6">
+// //           <Card className={`${themeConfig.border} ${themeConfig.card}`}>
+// //             <CardHeader>
+// //               <CardTitle className="flex items-center gap-2">
+// //                 <GraduationCap className="h-5 w-5 text-blue-700" /> Live
+// //                 Admissions Funnel
+// //               </CardTitle>
+// //               <CardDescription>
+// //                 Current status of the 2024-25 admissions cycle.
+// //               </CardDescription>
+// //             </CardHeader>
+// //             <CardContent>
+// //               <ResponsiveContainer width="100%" height={250}>
+// //                 <BarChart
+// //                   data={admissionsData}
+// //                   layout="vertical"
+// //                   margin={{ left: 20 }}
+// //                 >
+// //                   <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+// //                   <XAxis type="number" hide />
+// //                   <YAxis
+// //                     type="category"
+// //                     dataKey="stage"
+// //                     axisLine={false}
+// //                     tickLine={false}
+// //                     width={80}
+// //                   />
+// //                   <Tooltip
+// //                     cursor={{ fill: "rgba(239, 246, 255, 0.5)" }}
+// //                     contentStyle={{
+// //                       backgroundColor: "white",
+// //                       borderRadius: "8px",
+// //                     }}
+// //                   />
+// //                   <Bar dataKey="count" radius={[0, 8, 8, 0]} barSize={35}>
+// //                     {admissionsData.map((entry, index) => (
+// //                       <Cell key={`cell-${index}`} fill={entry.fill} />
+// //                     ))}
+// //                   </Bar>
+// //                 </BarChart>
+// //               </ResponsiveContainer>
+// //             </CardContent>
+// //           </Card>
+
+// //           <Card className={`${themeConfig.border} ${themeConfig.card}`}>
+// //             <CardHeader>
+// //               <CardTitle>Fee Collection Status (by Course)</CardTitle>
+// //               <CardDescription>
+// //                 Breakdown of fee collection for the current semester.
+// //               </CardDescription>
+// //             </CardHeader>
+// //             <CardContent>
+// //               <Table>
+// //                 <TableHeader>
+// //                   <TableRow>
+// //                     <TableHead>Course / Program</TableHead>
+// //                     <TableHead className="text-right">Total Due</TableHead>
+// //                     <TableHead className="text-right">Collected</TableHead>
+// //                     <TableHead className="text-center">Status</TableHead>
+// //                   </TableRow>
+// //                 </TableHeader>
+// //                 <TableBody>
+// //                   {feeCollectionData.map((course) => (
+// //                     <TableRow key={course.course}>
+// //                       <TableCell className="font-medium">
+// //                         {course.course}
+// //                       </TableCell>
+// //                       <TableCell className="text-right">
+// //                         ₹{course.total} Cr
+// //                       </TableCell>
+// //                       <TableCell className="text-right font-semibold">
+// //                         ₹{course.collected} Cr
+// //                       </TableCell>
+// //                       <TableCell>
+// //                         <div className="flex items-center gap-2">
+// //                           <Progress
+// //                             value={course.progress}
+// //                             className="w-full"
+// //                           />
+// //                           <span className="text-xs font-semibold text-slate-500">
+// //                             {course.progress}%
+// //                           </span>
+// //                         </div>
+// //                       </TableCell>
+// //                     </TableRow>
+// //                   ))}
+// //                 </TableBody>
+// //               </Table>
+// //             </CardContent>
+// //           </Card>
+// //         </div>
+
+// //         {/* --- Right Sidebar Section --- */}
+// //         <div className="space-y-6">
+// //           <Card className={`${themeConfig.border} ${themeConfig.card}`}>
+// //             <CardHeader>
+// //               <CardTitle>System Alerts</CardTitle>
+// //             </CardHeader>
+// //             <CardContent className="space-y-3">
+// //               {systemAlerts.map((item, idx) => (
+// //                 <div
+// //                   key={idx}
+// //                   className="flex items-center gap-3 text-sm p-3 bg-slate-50 rounded-lg"
+// //                 >
+// //                   {item.icon}
+// //                   <p className="flex-1">{item.text}</p>
+// //                 </div>
+// //               ))}
+// //             </CardContent>
+// //           </Card>
+
+// //           <div className="grid grid-cols-2 gap-4">
+// //             <Card
+// //               className={`${themeConfig.border} ${themeConfig.card} text-center`}
+// //             >
+// //               <CardHeader className="p-4 pb-2">
+// //                 <CardTitle className="text-sm font-medium flex items-center justify-center gap-2">
+// //                   <BedDouble className="h-4 w-4" />
+// //                   Hostel
+// //                 </CardTitle>
+// //               </CardHeader>
+// //               <CardContent className="p-4 pt-0">
+// //                 <p className="text-2xl font-bold text-blue-700">98%</p>
+// //                 <p className="text-xs text-slate-500">Occupied</p>
+// //               </CardContent>
+// //             </Card>
+// //             <Card
+// //               className={`${themeConfig.border} ${themeConfig.card} text-center`}
+// //             >
+// //               <CardHeader className="p-4 pb-2">
+// //                 <CardTitle className="text-sm font-medium flex items-center justify-center gap-2">
+// //                   <Library className="h-4 w-4" />
+// //                   Library
+// //                 </CardTitle>
+// //               </CardHeader>
+// //               <CardContent className="p-4 pt-0">
+// //                 <p className="text-2xl font-bold text-blue-700">65%</p>
+// //                 <p className="text-xs text-slate-500">Books Issued</p>
+// //               </CardContent>
+// //             </Card>
+// //           </div>
+
+// //           <Card className={`${themeConfig.border} ${themeConfig.card}`}>
+// //             <CardHeader>
+// //               <CardTitle>Recently Onboarded</CardTitle>
+// //             </CardHeader>
+// //             <CardContent>
+// //               {recentlyOnboarded.map((user, idx) => (
+// //                 <div
+// //                   key={idx}
+// //                   className={`flex items-center gap-3 ${
+// //                     idx < recentlyOnboarded.length - 1
+// //                       ? "pb-3 mb-3 border-b border-slate-100"
+// //                       : ""
+// //                   }`}
+// //                 >
+// //                   <div
+// //                     className={`p-2 rounded-full ${
+// //                       user.type === "Student"
+// //                         ? "bg-emerald-100 text-emerald-600"
+// //                         : "bg-indigo-100 text-indigo-600"
+// //                     }`}
+// //                   >
+// //                     {user.type === "Student" ? (
+// //                       <Users className="h-4 w-4" />
+// //                     ) : (
+// //                       <UserCog className="h-4 w-4" />
+// //                     )}
+// //                   </div>
+// //                   <div>
+// //                     <p className="text-sm font-semibold">{user.name}</p>
+// //                     <p className="text-xs text-slate-500">
+// //                       {user.type === "Student" ? user.course : user.dept}
+// //                     </p>
+// //                   </div>
+// //                 </div>
+// //               ))}
+// //             </CardContent>
+// //           </Card>
+// //         </div>
+// //       </div>
+// //     </div>
+// //   );
+// // }
+
+// // // "use client";
+
+// // // import React, { useEffect, useState } from "react";
+// // // import {
+// // //   Area,
+// // //   AreaChart,
+// // //   Bar,
+// // //   BarChart,
+// // //   CartesianGrid,
+// // //   Cell,
+// // //   Legend,
+// // //   Pie,
+// // //   PieChart,
+// // //   ResponsiveContainer,
+// // //   Tooltip,
+// // //   XAxis,
+// // //   YAxis,
+// // // } from "recharts";
+// // // import {
+// // //   Card,
+// // //   CardContent,
+// // //   CardDescription,
+// // //   CardFooter,
+// // //   CardHeader,
+// // //   CardTitle,
+// // // } from "@/components/ui/card";
+// // // import {
+// // //   Table,
+// // //   TableBody,
+// // //   TableCell,
+// // //   TableHead,
+// // //   TableHeader,
+// // //   TableRow,
+// // // } from "@/components/ui/table";
+// // // import { Progress } from "@/components/ui/progress";
+// // // import { Badge } from "@/components/ui/badge";
+// // // import { Button } from "@/components/ui/button";
+// // // import {
+// // //   DropdownMenu,
+// // //   DropdownMenuContent,
+// // //   DropdownMenuItem,
+// // //   DropdownMenuTrigger,
+// // // } from "@/components/ui/dropdown-menu";
+// // // import {
+// // //   Users,
+// // //   UserCheck,
+// // //   IndianRupee,
+// // //   Bell,
+// // //   TrendingUp,
+// // //   TrendingDown,
+// // //   Building,
+// // //   BookCopy,
+// // //   Wrench,
+// // //   ChevronDown,
+// // //   ChevronRight,
+// // //   ClipboardCheck,
+// // //   BedDouble,
+// // //   Library,
+// // //   AlertCircle,
+// // // } from "lucide-react";
+
+// // // // --- THEME CONFIG (Can be extracted to a separate file) ---
+// // // const THEMES = {
+// // //   blue: {
+// // //     name: "Blue",
+// // //     bg: "bg-slate-50",
+// // //     card: "bg-white",
+// // //     text: "text-slate-900",
+// // //     textMuted: "text-slate-600",
+// // //     border: "border-slate-200",
+// // //     primary: {
+// // //       bg: "bg-blue-600",
+// // //       hover: "hover:bg-blue-700",
+// // //       text: "text-blue-700",
+// // //       stroke: "#2563eb",
+// // //       fill: "#3b82f6",
+// // //     },
+// // //     secondary: { stroke: "#0891b2", fill: "#06b6d4" },
+// // //     accent: { stroke: "#f97316", fill: "#fb923c" },
+// // //   },
+// // // };
+
+// // // // --- ANIMATED COUNTER HELPER ---
+// // // const AnimatedCounter = ({
+// // //   value,
+// // //   prefix = "",
+// // //   suffix = "",
+// // // }: {
+// // //   value: number;
+// // //   prefix?: string;
+// // //   suffix?: string;
+// // // }) => {
+// // //   const [count, setCount] = useState(0);
+// // //   useEffect(() => {
+// // //     let startTime: number;
+// // //     const duration = 1500;
+// // //     const animate = (currentTime: number) => {
+// // //       if (!startTime) startTime = currentTime;
+// // //       const progress = Math.min((currentTime - startTime) / duration, 1);
+// // //       const easeOutQuint = 1 - Math.pow(1 - progress, 5);
+// // //       setCount(value * easeOutQuint);
+// // //       if (progress < 1) {
+// // //         requestAnimationFrame(animate);
+// // //       } else {
+// // //         setCount(value);
+// // //       }
+// // //     };
+// // //     requestAnimationFrame(animate);
+// // //   }, [value]);
+
+// // //   const formattedCount = Number.isInteger(count)
+// // //     ? Math.round(count).toLocaleString()
+// // //     : parseFloat(count.toFixed(1)).toLocaleString();
+// // //   return (
+// // //     <span>
+// // //       {prefix}
+// // //       {formattedCount}
+// // //       {suffix}
+// // //     </span>
+// // //   );
+// // // };
+
+// // // // --- REUSABLE METRIC CARD COMPONENT ---
+// // // const MetricCard = ({
+// // //   title,
+// // //   value,
+// // //   change,
+// // //   icon,
+// // //   prefix = "",
+// // //   suffix = "",
+// // //   trend = "up",
+// // //   theme,
+// // // }: any) => (
+// // //   <Card
+// // //     className={`relative overflow-hidden ${theme.border} ${theme.card} hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group`}
+// // //   >
+// // //     <CardContent className="p-4">
+// // //       <div className="flex items-start justify-between">
+// // //         <div
+// // //           className={`p-3 rounded-xl ${theme.primary.bg}/10 ${theme.primary.text} group-hover:scale-110 transition-transform`}
+// // //         >
+// // //           {icon}
+// // //         </div>
+// // //         <div
+// // //           className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
+// // //             trend === "up"
+// // //               ? "bg-emerald-100 text-emerald-700"
+// // //               : trend === "down"
+// // //               ? "bg-red-100 text-red-700"
+// // //               : "bg-slate-100 text-slate-700"
+// // //           }`}
+// // //         >
+// // //           {trend === "up" && <TrendingUp className="h-3 w-3" />}
+// // //           {trend === "down" && <TrendingDown className="h-3 w-3" />}
+// // //           {change}
+// // //         </div>
+// // //       </div>
+// // //       <div className="mt-2">
+// // //         <h3 className={`text-sm font-medium ${theme.textMuted}`}>{title}</h3>
+// // //         <p className={`text-2xl font-bold ${theme.text} tracking-tight`}>
+// // //           <AnimatedCounter value={value} prefix={prefix} suffix={suffix} />
+// // //         </p>
+// // //       </div>
+// // //     </CardContent>
+// // //   </Card>
+// // // );
+
+// // // // --- MAIN COLLEGE ADMIN DASHBOARD COMPONENT ---
+// // // export default function CollegeAdminDashboard() {
+// // //   const [themeKey] = useState("blue");
+// // //   const themeConfig = THEMES[themeKey as keyof typeof THEMES];
+
+// // //   // --- MOCK DATA FOR LDRP-ITR COLLEGE ---
+// // //   const collegeMetrics = [
+// // //     {
+// // //       title: "Active Students",
+// // //       value: 4520,
+// // //       change: "+45 this week",
+// // //       icon: <Users className="h-6 w-6" />,
+// // //       trend: "up" as const,
+// // //     },
+// // //     {
+// // //       title: "Today's Attendance",
+// // //       value: 88.5,
+// // //       suffix: "%",
+// // //       change: "-1.2%",
+// // //       icon: <UserCheck className="h-6 w-6" />,
+// // //       trend: "down" as const,
+// // //     },
+// // //     {
+// // //       title: "Fee Collection (Sem)",
+// // //       value: 96.2,
+// // //       suffix: "%",
+// // //       change: "₹1.8 Cr Left",
+// // //       icon: <IndianRupee className="h-6 w-6" />,
+// // //       trend: "neutral" as const,
+// // //     },
+// // //     {
+// // //       title: "Open Grievances",
+// // //       value: 12,
+// // //       change: "+3 New",
+// // //       icon: <AlertCircle className="h-6 w-6" />,
+// // //       trend: "up" as const,
+// // //     },
+// // //   ];
+
+// // //   const departmentPerformanceData = [
+// // //     {
+// // //       name: "Computer Science",
+// // //       attendance: 92,
+// // //       avgScore: 85,
+// // //       syllabus: 78,
+// // //       facultyLeave: 1,
+// // //     },
+// // //     {
+// // //       name: "Mechanical Eng.",
+// // //       attendance: 85,
+// // //       avgScore: 76,
+// // //       syllabus: 75,
+// // //       facultyLeave: 3,
+// // //     },
+// // //     {
+// // //       name: "Civil Eng.",
+// // //       attendance: 89,
+// // //       avgScore: 81,
+// // //       syllabus: 82,
+// // //       facultyLeave: 0,
+// // //     },
+// // //     {
+// // //       name: "E.C. Eng.",
+// // //       attendance: 81,
+// // //       avgScore: 72,
+// // //       syllabus: 65,
+// // //       facultyLeave: 2,
+// // //     },
+// // //   ];
+
+// // //   const attendanceTrendData = [
+// // //     { date: "Mon", attendance: 91.2 },
+// // //     { date: "Tue", attendance: 92.1 },
+// // //     { date: "Wed", attendance: 92.5 },
+// // //     { date: "Thu", attendance: 90.8 },
+// // //     { date: "Fri", attendance: 87.3 },
+// // //     { date: "Sat", attendance: 85.1 },
+// // //     { date: "Sun", attendance: 88.5 },
+// // //   ];
+
+// // //   const approvalItems = [
+// // //     {
+// // //       type: "Leave",
+// // //       text: "Dr. Sharma, CS Dept (3 Days)",
+// // //       priority: "medium",
+// // //       icon: <ClipboardCheck className="h-4 w-4 text-sky-600" />,
+// // //     },
+// // //     {
+// // //       type: "Purchase",
+// // //       text: "Lab Equipment for Mech. Dept",
+// // //       priority: "high",
+// // //       icon: <Wrench className="h-4 w-4 text-amber-600" />,
+// // //     },
+// // //     {
+// // //       type: "Event",
+// // //       text: '"Hackathon 2024" by Student Council',
+// // //       priority: "medium",
+// // //       icon: <BookCopy className="h-4 w-4 text-indigo-600" />,
+// // //     },
+// // //   ];
+
+// // //   const studentGrievances = [
+// // //     {
+// // //       id: "#G4821",
+// // //       dept: "Hostel",
+// // //       issue: "Wi-Fi not working in B-Block",
+// // //       status: "Open",
+// // //       priority: "high",
+// // //     },
+// // //     {
+// // //       id: "#G4820",
+// // //       dept: "Academics",
+// // //       issue: "Marks missing for IA-2 (EC)",
+// // //       status: "In Progress",
+// // //       priority: "medium",
+// // //     },
+// // //     {
+// // //       id: "#G4819",
+// // //       dept: "Library",
+// // //       issue: "Request for new AI/ML books",
+// // //       status: "Open",
+// // //       priority: "low",
+// // //     },
+// // //   ];
+
+// // //   return (
+// // //     <div className={`p-4 sm:p-6 space-y-6 ${themeConfig.bg}`}>
+// // //       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+// // //         <div>
+// // //           <h1 className="text-2xl sm:text-3xl font-bold text-slate-800">
+// // //             LDRP-ITR College Dashboard
+// // //           </h1>
+// // //           <p className={`${themeConfig.textMuted} mt-1`}>
+// // //             Welcome back, Dr. Patel! Here’s your college's operational overview.
+// // //           </p>
+// // //         </div>
+// // //         <DropdownMenu>
+// // //           <DropdownMenuTrigger asChild>
+// // //             <Button variant="outline" className="gap-2 w-full md:w-auto">
+// // //               <Building className="h-4 w-4" />
+// // //               All Departments
+// // //               <ChevronDown className="h-4 w-4" />
+// // //             </Button>
+// // //           </DropdownMenuTrigger>
+// // //           <DropdownMenuContent align="end">
+// // //             <DropdownMenuItem>Computer Science</DropdownMenuItem>
+// // //             <DropdownMenuItem>Mechanical Eng.</DropdownMenuItem>
+// // //             <DropdownMenuItem>Civil Eng.</DropdownMenuItem>
+// // //           </DropdownMenuContent>
+// // //         </DropdownMenu>
+// // //       </div>
+
+// // //       {/* --- Top KPI Cards --- */}
+// // //       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+// // //         {collegeMetrics.map((metric) => (
+// // //           <MetricCard key={metric.title} {...metric} theme={themeConfig} />
+// // //         ))}
+// // //       </div>
+
+// // //       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+// // //         {/* --- Main Section (Left) --- */}
+// // //         <div className="lg:col-span-2 space-y-6">
+// // //           <Card className={`${themeConfig.border} ${themeConfig.card}`}>
+// // //             <CardHeader>
+// // //               <CardTitle>Departmental Health Snapshot</CardTitle>
+// // //               <CardDescription>
+// // //                 Real-time academic and operational metrics by department.
+// // //               </CardDescription>
+// // //             </CardHeader>
+// // //             <CardContent>
+// // //               <Table>
+// // //                 <TableHeader>
+// // //                   <TableRow>
+// // //                     <TableHead>Department</TableHead>
+// // //                     <TableHead className="text-center">
+// // //                       Live Attendance
+// // //                     </TableHead>
+// // //                     <TableHead className="text-center">
+// // //                       Syllabus Coverage
+// // //                     </TableHead>
+// // //                     <TableHead className="text-center">
+// // //                       Faculty on Leave
+// // //                     </TableHead>
+// // //                   </TableRow>
+// // //                 </TableHeader>
+// // //                 <TableBody>
+// // //                   {departmentPerformanceData.map((dept) => (
+// // //                     <TableRow key={dept.name} className="hover:bg-slate-50">
+// // //                       <TableCell className="font-medium">{dept.name}</TableCell>
+// // //                       <TableCell className="text-center">
+// // //                         <Badge
+// // //                           variant={
+// // //                             dept.attendance > 90
+// // //                               ? "default"
+// // //                               : dept.attendance > 80
+// // //                               ? "secondary"
+// // //                               : "destructive"
+// // //                           }
+// // //                         >
+// // //                           {dept.attendance}%
+// // //                         </Badge>
+// // //                       </TableCell>
+// // //                       <TableCell className="text-center">
+// // //                         <div className="flex items-center justify-center gap-2">
+// // //                           <span>{dept.syllabus}%</span>
+// // //                           <Progress value={dept.syllabus} className="w-20" />
+// // //                         </div>
+// // //                       </TableCell>
+// // //                       <TableCell className="text-center font-bold">
+// // //                         {dept.facultyLeave}
+// // //                       </TableCell>
+// // //                     </TableRow>
+// // //                   ))}
+// // //                 </TableBody>
+// // //               </Table>
+// // //             </CardContent>
+// // //           </Card>
+
+// // //           <Card className={`${themeConfig.border} ${themeConfig.card}`}>
+// // //             <CardHeader>
+// // //               <CardTitle>Weekly Attendance Trend</CardTitle>
+// // //               <CardDescription>
+// // //                 Daily attendance percentage over the past week.
+// // //               </CardDescription>
+// // //             </CardHeader>
+// // //             <CardContent>
+// // //               <ResponsiveContainer width="100%" height={250}>
+// // //                 <AreaChart
+// // //                   data={attendanceTrendData}
+// // //                   margin={{ top: 5, right: 20, left: -10, bottom: 5 }}
+// // //                 >
+// // //                   <defs>
+// // //                     <linearGradient
+// // //                       id="colorAttendance"
+// // //                       x1="0"
+// // //                       y1="0"
+// // //                       x2="0"
+// // //                       y2="1"
+// // //                     >
+// // //                       <stop
+// // //                         offset="5%"
+// // //                         stopColor={themeConfig.primary.fill}
+// // //                         stopOpacity={0.8}
+// // //                       />
+// // //                       <stop
+// // //                         offset="95%"
+// // //                         stopColor={themeConfig.primary.fill}
+// // //                         stopOpacity={0}
+// // //                       />
+// // //                     </linearGradient>
+// // //                   </defs>
+// // //                   <CartesianGrid
+// // //                     strokeDasharray="3 3"
+// // //                     stroke={themeConfig.border}
+// // //                   />
+// // //                   <XAxis
+// // //                     dataKey="date"
+// // //                     stroke={themeConfig.textMuted}
+// // //                     fontSize={12}
+// // //                   />
+// // //                   <YAxis
+// // //                     stroke={themeConfig.textMuted}
+// // //                     fontSize={12}
+// // //                     tickFormatter={(value) => `${value}%`}
+// // //                   />
+// // //                   <Tooltip
+// // //                     contentStyle={{
+// // //                       backgroundColor: themeConfig.card,
+// // //                       borderRadius: "8px",
+// // //                       border: `1px solid ${themeConfig.border}`,
+// // //                     }}
+// // //                   />
+// // //                   <Area
+// // //                     type="monotone"
+// // //                     dataKey="attendance"
+// // //                     stroke={themeConfig.primary.stroke}
+// // //                     fill="url(#colorAttendance)"
+// // //                     strokeWidth={2}
+// // //                   />
+// // //                 </AreaChart>
+// // //               </ResponsiveContainer>
+// // //             </CardContent>
+// // //           </Card>
+// // //         </div>
+
+// // //         {/* --- Side Section (Right) --- */}
+// // //         <div className="space-y-6">
+// // //           <Card className={`${themeConfig.border} ${themeConfig.card}`}>
+// // //             <CardHeader>
+// // //               <CardTitle>Action Required</CardTitle>
+// // //             </CardHeader>
+// // //             <CardContent className="space-y-3">
+// // //               {approvalItems.map((item) => (
+// // //                 <div
+// // //                   key={item.text}
+// // //                   className="flex items-center gap-3 p-3 rounded-lg bg-slate-50 border border-slate-200"
+// // //                 >
+// // //                   <div className="p-2 bg-white rounded-md shadow-sm">
+// // //                     {item.icon}
+// // //                   </div>
+// // //                   <div className="flex-1">
+// // //                     <p className="text-sm font-medium">{item.type} Request</p>
+// // //                     <p className="text-xs text-slate-500">{item.text}</p>
+// // //                   </div>
+// // //                   {item.priority === "high" && (
+// // //                     <div className="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse"></div>
+// // //                   )}
+// // //                   <ChevronRight className="h-4 w-4 text-slate-400" />
+// // //                 </div>
+// // //               ))}
+// // //             </CardContent>
+// // //           </Card>
+
+// // //           <Card className={`${themeConfig.border} ${themeConfig.card}`}>
+// // //             <CardHeader>
+// // //               <CardTitle>Live Student Grievances</CardTitle>
+// // //             </CardHeader>
+// // //             <CardContent>
+// // //               {studentGrievances.map((item, index) => (
+// // //                 <div
+// // //                   key={item.id}
+// // //                   className={`flex items-start gap-3 ${
+// // //                     index < studentGrievances.length - 1
+// // //                       ? "pb-3 mb-3 border-b border-slate-100"
+// // //                       : ""
+// // //                   }`}
+// // //                 >
+// // //                   <div className="flex-1">
+// // //                     <div className="flex justify-between items-center">
+// // //                       <p className="text-sm font-semibold">{item.issue}</p>
+// // //                       <Badge
+// // //                         variant={
+// // //                           item.status === "Open" ? "destructive" : "secondary"
+// // //                         }
+// // //                       >
+// // //                         {item.status}
+// // //                       </Badge>
+// // //                     </div>
+// // //                     <p className="text-xs text-slate-500 mt-1">
+// // //                       From: {item.dept} Dept • ID: {item.id}
+// // //                     </p>
+// // //                   </div>
+// // //                 </div>
+// // //               ))}
+// // //             </CardContent>
+// // //           </Card>
+
+// // //           <div className="grid grid-cols-2 gap-4">
+// // //             <Card
+// // //               className={`${themeConfig.border} ${themeConfig.card} text-center`}
+// // //             >
+// // //               <CardHeader className="p-4">
+// // //                 <CardTitle className="text-base">Hostel Occupancy</CardTitle>
+// // //               </CardHeader>
+// // //               <CardContent className="p-4 pt-0">
+// // //                 <div
+// // //                   className="relative mx-auto"
+// // //                   style={{ height: "100px", width: "100px" }}
+// // //                 >
+// // //                   <ResponsiveContainer width="100%" height="100%">
+// // //                     <PieChart>
+// // //                       <Pie
+// // //                         data={[{ name: "Occupied", value: 98 }]}
+// // //                         dataKey="value"
+// // //                         cx="50%"
+// // //                         cy="50%"
+// // //                         innerRadius={35}
+// // //                         outerRadius={45}
+// // //                         startAngle={90}
+// // //                         endAngle={-270}
+// // //                         cornerRadius={5}
+// // //                       >
+// // //                         <Cell fill={themeConfig.primary.fill} />
+// // //                       </Pie>
+// // //                     </PieChart>
+// // //                   </ResponsiveContainer>
+// // //                   <div className="absolute inset-0 flex items-center justify-center">
+// // //                     <span
+// // //                       className={`text-xl font-bold ${themeConfig.primary.text}`}
+// // //                     >
+// // //                       98%
+// // //                     </span>
+// // //                   </div>
+// // //                 </div>
+// // //                 <p className="text-xs text-slate-500 mt-2">1280 / 1300 Beds</p>
+// // //               </CardContent>
+// // //             </Card>
+
+// // //             <Card
+// // //               className={`${themeConfig.border} ${themeConfig.card} text-center`}
+// // //             >
+// // //               <CardHeader className="p-4">
+// // //                 <CardTitle className="text-base">Library Usage</CardTitle>
+// // //               </CardHeader>
+// // //               <CardContent className="p-4 pt-0">
+// // //                 <div
+// // //                   className="relative mx-auto"
+// // //                   style={{ height: "100px", width: "100px" }}
+// // //                 >
+// // //                   <ResponsiveContainer width="100%" height="100%">
+// // //                     <PieChart>
+// // //                       <Pie
+// // //                         data={[{ name: "Checked Out", value: 65 }]}
+// // //                         dataKey="value"
+// // //                         cx="50%"
+// // //                         cy="50%"
+// // //                         innerRadius={35}
+// // //                         outerRadius={45}
+// // //                         startAngle={90}
+// // //                         endAngle={-145}
+// // //                         cornerRadius={5}
+// // //                       >
+// // //                         <Cell fill={themeConfig.accent.fill} />
+// // //                       </Pie>
+// // //                     </PieChart>
+// // //                   </ResponsiveContainer>
+// // //                   <div className="absolute inset-0 flex items-center justify-center">
+// // //                     <span className={`text-xl font-bold text-orange-600`}>
+// // //                       65%
+// // //                     </span>
+// // //                   </div>
+// // //                 </div>
+// // //                 <p className="text-xs text-slate-500 mt-2">
+// // //                   18,500 Books Issued
+// // //                 </p>
+// // //               </CardContent>
+// // //             </Card>
+// // //           </div>
+// // //         </div>
+// // //       </div>
+// // //     </div>
+// // //   );
+// // // }
