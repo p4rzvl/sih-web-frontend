@@ -189,7 +189,7 @@ export default function MentorLayout({ children }: { children: React.ReactNode }
                 </SheetContent>
               </Sheet>
                  <p className="text-2xl sm:text-3xl  l font-bold text-gray-900">
-                    Dr. Ashish Patel
+                    Head Of Department (Computer Science and Technology)
                   </p>
                 
 

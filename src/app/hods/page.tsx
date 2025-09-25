@@ -85,7 +85,7 @@ export default function HODDashboard() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className={`${theme.text}`}>HOD Dashboard</h1>
+            <h1 className={`${theme.text}`}>Hello, Dr. Ashish Patel</h1>
             <p className={`${theme.textMuted}`}>
               Overview — Academic health, placements, events and feedback
               (department).

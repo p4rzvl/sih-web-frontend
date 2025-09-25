@@ -139,27 +139,29 @@ const MetricCard = ({
         >
           {icon}
         </div>
-        {change && (
-          <div
-            className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium mt-2 ${
-              trend === "up"
-                ? "bg-emerald-100 text-emerald-700"
-                : trend === "down"
-                ? "bg-red-100 text-red-700"
-                : "bg-slate-100 text-slate-700"
-            }`}
-          >
-            {trend === "up" && <TrendingUp className="h-3 w-3" />}
-            {trend === "down" && <TrendingDown className="h-3 w-3" />}
-            {change}
-          </div>
-        )}
       </div>
       <div className="mt-2">
         <h3 className={`text-sm font-medium ${theme.textMuted}`}>{title}</h3>
-        <p className={`text-2xl font-bold ${theme.text} tracking-tight`}>
-          <AnimatedCounter value={value} prefix={prefix} suffix={suffix} />
-        </p>
+        <div className="flex items-baseline gap-5 sm:gap-6">
+          <p className={`text-2xl font-bold ${theme.text} tracking-tight pr-2 sm:pr-3`}>
+            <AnimatedCounter value={value} prefix={prefix} suffix={suffix} />
+          </p>
+          {change && (
+            <div
+              className={`inline-flex items-center gap-5 px-2 py-1 rounded-full text-xs font-medium mt-1 ml-2 sm:ml-3 ${
+                trend === "up"
+                  ? "bg-emerald-100 text-emerald-700"
+                  : trend === "down"
+                  ? "bg-red-100 text-red-700"
+                  : "bg-slate-100 text-slate-700"
+              }`}
+            >
+              {trend === "up" && <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4" />}
+              {trend === "down" && <TrendingDown className="h-3 w-3 sm:h-4 sm:w-4" />}
+              {change}
+            </div>
+          )}
+        </div>
       </div>
     </CardContent>
   </Card>
